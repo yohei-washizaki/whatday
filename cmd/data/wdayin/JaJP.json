@@ -1,0 +1,16 @@
+[
+  {
+    "id": 0,
+    "date": "01-01",
+    "recurring": true,
+    "title": "元旦",
+    "description": "新年の始まりを祝う日です。"
+  },
+  {
+    "id": 222,
+    "date": "02-22",
+    "recurring": true,
+    "title": "猫の日",
+    "description": "猫を愛でる日です。"
+  }
+]

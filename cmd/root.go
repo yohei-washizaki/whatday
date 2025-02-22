@@ -22,14 +22,34 @@ THE SOFTWARE.
 package cmd
 
 import (
+	"embed"
 	"fmt"
 	"os"
+	"path/filepath"
+	"time"
+
+	"encoding/json"
 
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )
 
+//go:embed data/wdayin/*.json
+var wdayinData embed.FS
+
+// Event はデータセット内の各記念日イベントを表現する構造体です。
+type Event struct {
+	ID          int    `json:"id" yaml:"id"`
+	Date        string `json:"date" yaml:"date"`           // "MM-DD"形式で記録（例: "02-22"）
+	Recurring   bool   `json:"recurring" yaml:"recurring"` // 毎年繰り返すイベントなら true
+	Title       string `json:"title" yaml:"title"`
+	Description string `json:"description" yaml:"description"`
+}
+
+const kDataRoot = "data/wdayin"
+
 var cfgFile string
+var showDescription bool
 
 // rootCmd represents the base command when called without any subcommands
 var rootCmd = &cobra.Command{
@@ -38,9 +58,50 @@ var rootCmd = &cobra.Command{
 	Long: `whatday is a simple CLI tool that reveals historical events, notable birthdays,
 and interesting observances for any given day. Built with Go and Cobra, 
 this project serves as a personal learning exercise in crafting concise, effective CLI applications.`,
-	// Uncomment the following line if your bare application
-	// has an action associated with it:
-	// Run: func(cmd *cobra.Command, args []string) { },
+	Run: func(cmd *cobra.Command, args []string) {
+		var datasetPath string
+		locale := viper.GetString("region")
+		switch locale {
+		case "EnUS":
+			datasetPath = filepath.Join(kDataRoot, "EnUS.json")
+		case "JaJP":
+			datasetPath = filepath.Join(kDataRoot, "JaJP.json")
+		default:
+			datasetPath = filepath.Join(kDataRoot, "JaJP.json")
+		}
+
+		data, err := wdayinData.ReadFile(datasetPath)
+		if err != nil {
+			fmt.Println("Error reading dataset file:", err)
+			return
+		}
+
+		// Parse the JSON data into a slice of Event structs
+		var events []Event
+		if err := json.Unmarshal(data, &events); err != nil {
+			fmt.Fprintf(os.Stderr, "Error parsing JSON data: %v\n", err)
+			return
+		}
+
+		today := time.Now()
+		todayStr := today.Format("01-02")
+		var	eventsFound[] Event
+		for _, e := range events {
+			if e.Recurring && e.Date == todayStr {
+				eventsFound = append(eventsFound, e)
+			}
+		}
+
+		if len(eventsFound) > 0 {
+			for _, e := range eventsFound {
+				if showDescription {
+					fmt.Printf("%s, %s\n", e.Title, e.Description)
+				} else {
+					fmt.Printf("%s\n", e.Title)
+				}
+			}
+		}
+	},
 }
 
 // Execute adds all child commands to the root command and sets flags appropriately.
@@ -60,12 +121,13 @@ func init() {
 	// will be global for your application.
 
 	rootCmd.PersistentFlags().StringVar(&cfgFile, "config", "", "config file (default is $HOME/.wday.yaml)")
-	rootCmd.PersistentFlags().String("region", "JP", "Region code for the default dataset (e.g. *JP, US)")
-	viper.BindPFlag("region", rootCmd.PersistentFlags().Lookup("region"))
+	rootCmd.PersistentFlags().String("locale", "JP", "Region code for the default dataset (e.g. *JaJP, EnUS)")
+	viper.BindPFlag("locale", rootCmd.PersistentFlags().Lookup("locale"))
 
 	// Cobra also supports local flags, which will only run
 	// when this action is called directly.
 	rootCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
+	rootCmd.Flags().BoolVarP(&showDescription, "description", "d", false, "Show event descriptions")
 }
 
 // initConfig reads in config file and ENV variables if set.
@@ -87,7 +149,29 @@ func initConfig() {
 	viper.AutomaticEnv() // read in environment variables that match
 
 	// If a config file is found, read it in.
-	if err := viper.ReadInConfig(); err == nil {
-		fmt.Fprintln(os.Stderr, "Using config file:", viper.ConfigFileUsed())
+	if err := viper.ReadInConfig(); err != nil {
+		if _, ok := err.(viper.ConfigFileNotFoundError); ok {
+			var configFile string
+			if cfgFile != "" {
+				configFile = cfgFile
+			} else {
+				home, err := os.UserHomeDir()
+				cobra.CheckErr(err)
+				configFile = home + "/.wday.yaml"
+			}
+			defaultConfig := []byte("locale: JaJP\n")
+			err := os.WriteFile(configFile, defaultConfig, 0644)
+			if err != nil {
+				fmt.Println("Error creating default config file:", err)
+			} else{
+				fmt.Println("Default config file created at:", configFile)
+				viper.SetConfigFile(configFile)
+				if err := viper.ReadInConfig(); err != nil {
+					fmt.Fprintln(os.Stderr, "Error reading default config file:", err)
+				}
+			}
+		} else{
+			fmt.Fprintln(os.Stderr, "Error reading config file:", err)
+		}
 	}
 }
