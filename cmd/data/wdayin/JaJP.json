@@ -12,5 +12,12 @@
     "recurring": true,
     "title": "猫の日",
     "description": "猫を愛でる日です。"
+  },
+  {
+    "id": 223,
+    "date": "02-22",
+    "recurring": true,
+    "title": "おでんの日",
+    "description": "熱々のおでんを食べるときに、息を吹き掛けて冷ます音「ふ～ふ～ふ（日本記念日協会認定）」が由来です。"
   }
 ]
