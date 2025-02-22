@@ -24,6 +24,7 @@ package cmd
 import (
 	"embed"
 	"fmt"
+	"math/rand"
 	"os"
 	"path/filepath"
 	"time"
@@ -50,6 +51,7 @@ const kDataRoot = "data/wdayin"
 
 var cfgFile string
 var showDescription bool
+var showAll bool
 
 // rootCmd represents the base command when called without any subcommands
 var rootCmd = &cobra.Command{
@@ -60,7 +62,7 @@ and interesting observances for any given day. Built with Go and Cobra,
 this project serves as a personal learning exercise in crafting concise, effective CLI applications.`,
 	Run: func(cmd *cobra.Command, args []string) {
 		var datasetPath string
-		locale := viper.GetString("region")
+		locale := viper.GetString("locale")
 		switch locale {
 		case "EnUS":
 			datasetPath = filepath.Join(kDataRoot, "EnUS.json")
@@ -85,23 +87,41 @@ this project serves as a personal learning exercise in crafting concise, effecti
 
 		today := time.Now()
 		todayStr := today.Format("01-02")
-		var	eventsFound[] Event
+		var eventsFound []Event
 		for _, e := range events {
 			if e.Recurring && e.Date == todayStr {
 				eventsFound = append(eventsFound, e)
 			}
 		}
 
-		if len(eventsFound) > 0 {
-			for _, e := range eventsFound {
-				if showDescription {
-					fmt.Printf("%s, %s\n", e.Title, e.Description)
-				} else {
-					fmt.Printf("%s\n", e.Title)
-				}
-			}
+		if len(eventsFound) == 0 {
+			return
 		}
+
+		if showAll {
+			for _, e := range eventsFound {
+				displayEvent(e, showDescription)
+			}
+			return
+		}
+
+		eventSelected := eventsFound[randomIndex(len(eventsFound))]
+		displayEvent(eventSelected, showDescription)
 	},
+}
+
+func displayEvent(e Event, showDescription bool) {
+	if showDescription {
+		fmt.Printf("%s, %s\n", e.Title, e.Description)
+	} else {
+		fmt.Printf("%s\n", e.Title)
+	}
+}
+
+var rnd = rand.New(rand.NewSource(time.Now().UnixNano()))
+
+func randomIndex(max int) int {
+	return rnd.Intn(max)
 }
 
 // Execute adds all child commands to the root command and sets flags appropriately.
@@ -121,13 +141,13 @@ func init() {
 	// will be global for your application.
 
 	rootCmd.PersistentFlags().StringVar(&cfgFile, "config", "", "config file (default is $HOME/.wday.yaml)")
-	rootCmd.PersistentFlags().String("locale", "JP", "Region code for the default dataset (e.g. *JaJP, EnUS)")
+	rootCmd.PersistentFlags().String("locale", "JaJP", "Locale code for the default dataset (e.g. JaJP, EnUS)")
 	viper.BindPFlag("locale", rootCmd.PersistentFlags().Lookup("locale"))
 
 	// Cobra also supports local flags, which will only run
 	// when this action is called directly.
-	rootCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
 	rootCmd.Flags().BoolVarP(&showDescription, "description", "d", false, "Show event descriptions")
+	rootCmd.Flags().BoolVarP(&showAll, "all", "a", false, "Show all events found.")
 }
 
 // initConfig reads in config file and ENV variables if set.
@@ -163,14 +183,14 @@ func initConfig() {
 			err := os.WriteFile(configFile, defaultConfig, 0644)
 			if err != nil {
 				fmt.Println("Error creating default config file:", err)
-			} else{
+			} else {
 				fmt.Println("Default config file created at:", configFile)
 				viper.SetConfigFile(configFile)
 				if err := viper.ReadInConfig(); err != nil {
 					fmt.Fprintln(os.Stderr, "Error reading default config file:", err)
 				}
 			}
-		} else{
+		} else {
 			fmt.Fprintln(os.Stderr, "Error reading config file:", err)
 		}
 	}
