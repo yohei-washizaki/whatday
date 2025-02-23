@@ -86,11 +86,19 @@ this project serves as a personal learning exercise in crafting concise, effecti
 		}
 
 		today := time.Now()
-		todayStr := today.Format("01-02")
-		var eventsFound []Event
+		var eventsFound [] Event
 		for _, e := range events {
-			if e.Recurring && e.Date == todayStr {
-				eventsFound = append(eventsFound, e)
+			d, err := time.Parse("2006-01-02", e.Date)
+			if err != nil {
+				fmt.Fprintf(os.Stderr, "Error parsing events data: %d\n", e.ID);
+				os.Exit(1)
+				return
+			}
+
+			if e.Recurring {
+				if d.Month() == today.Month() && d.Day() == today.Day() {
+					eventsFound = append(eventsFound, e)
+				}
 			}
 		}
 
