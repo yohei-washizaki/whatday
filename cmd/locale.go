@@ -39,13 +39,19 @@ Cobra is a CLI library for Go that empowers applications.
 This application is a tool to generate the needed files
 to quickly create a Cobra application.`,
 	Run: func(cmd *cobra.Command, args []string) {
-		locale := viper.GetString("locale")
-		fmt.Printf("%s\n", locale)
+		localeCode := viper.GetString("locale")
+		locale, ok := GetLocaleByCode(localeCode)
+
+		if !ok {
+			return
+		}
+
+		printLocale(locale, showDesc)
 	},
 }
 
 type Locale struct {
-	Code		string
+	Code        string
 	DisplayName string
 }
 
@@ -54,14 +60,29 @@ var SupportedLocalesMap = map[string]Locale{
 	"EnUS": {Code: "EnUS", DisplayName: "English(US)"},
 }
 
+func GetLocaleByCode(code string) (Locale, bool) {
+	loc, ok := SupportedLocalesMap[code]
+	return loc, ok
+}
+
+var showDesc bool
+
+func printLocale(locale Locale, displayName bool) {
+	if displayName {
+		fmt.Printf("%s, %s\n", locale.Code, locale.DisplayName)
+		return
+	}
+	fmt.Printf("%s\n", locale.Code)
+}
+
 var listCmd = &cobra.Command{
 	Use:   "list",
 	Short: "A brief description of your command",
 	Long: `A longer description that spans multiple lines and likely contains examples
 and usage of using your command.`,
 	Run: func(cmd *cobra.Command, args []string) {
-		for _, loc := range SupportedLocalesMap{
-			fmt.Printf("%s\n", loc.Code)
+		for _, loc := range SupportedLocalesMap {
+			printLocale(loc, showDesc)
 		}
 	},
 }
@@ -75,6 +96,7 @@ func init() {
 	// Cobra supports Persistent Flags which will work for this command
 	// and all subcommands, e.g.:
 	// localeCmd.PersistentFlags().String("foo", "", "A help for foo")
+	localeCmd.PersistentFlags().BoolVar(&showDesc, "desc", false, "Show description of locale.")
 
 	// Cobra supports local flags which will only run when this command
 	// is called directly, e.g.:
