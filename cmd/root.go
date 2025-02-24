@@ -86,11 +86,11 @@ this project serves as a personal learning exercise in crafting concise, effecti
 		}
 
 		today := time.Now()
-		var eventsFound [] Event
+		var eventsFound []Event
 		for _, e := range events {
 			d, err := time.Parse("2006-01-02", e.Date)
 			if err != nil {
-				fmt.Fprintf(os.Stderr, "Error parsing events data: %d\n", e.ID);
+				fmt.Fprintf(os.Stderr, "Error parsing events data: %d\n", e.ID)
 				os.Exit(1)
 				return
 			}
@@ -119,10 +119,9 @@ this project serves as a personal learning exercise in crafting concise, effecti
 }
 
 func displayEvent(e Event, showDescription bool) {
+	fmt.Println(e.Title)
 	if showDescription {
-		fmt.Printf("%s, %s\n", e.Title, e.Description)
-	} else {
-		fmt.Printf("%s\n", e.Title)
+		fmt.Println(e.Description)
 	}
 }
 
