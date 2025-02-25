@@ -31,6 +31,7 @@ import (
 
 	"encoding/json"
 
+	"github.com/goodsign/monday"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )
@@ -95,10 +96,8 @@ this project serves as a personal learning exercise in crafting concise, effecti
 				return
 			}
 
-			if e.Recurring {
-				if d.Month() == today.Month() && d.Day() == today.Day() {
-					eventsFound = append(eventsFound, e)
-				}
+			if d.Month() == today.Month() && d.Day() == today.Day() {
+				eventsFound = append(eventsFound, e)
 			}
 		}
 
@@ -121,7 +120,28 @@ this project serves as a personal learning exercise in crafting concise, effecti
 func displayEvent(e Event, showDescription bool) {
 	fmt.Println(e.Title)
 	if showDescription {
+		// ロケールに沿って、記念日のフォーマットを調整する
+		dateFormatted, err := FormatDateForLocale(e.Date, viper.GetString("locale"))
+		if err == nil {
+			fmt.Println(dateFormatted)
+		}
 		fmt.Println(e.Description)
+	}
+}
+
+func FormatDateForLocale(dateStr, locale string) (string, error) {
+	t, err := time.Parse("2006-01-02", dateStr)
+	if err != nil {
+		return "", err
+	}
+
+	switch locale {
+	case "JaJP":
+		return monday.Format(t, "2006年1月2日", monday.LocaleJaJP), nil
+	case "EnUS":
+		return monday.Format(t, "January 2, 2006", monday.LocaleEnUS), nil
+	default:
+		return t.Format("2006-01-02"), nil
 	}
 }
 

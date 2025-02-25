@@ -23,15 +23,22 @@
   {
     "id": 4,
     "date": "1960-02-23",
-    "recurring": true,
+    "recurring": false,
     "title": "天皇誕生日",
     "description": "第126代天皇徳仁の誕生日。日本の国民の祝日の一つである。"
   },
   {
     "id": 5,
     "date": "1958-02-24",
-    "recurring": true,
+    "recurring": false,
     "title": "月光仮面登場の日",
     "description": "1958年（昭和33年）のこの日、ラジオ東京（現：TBS）で国産初の連続テレビ映画『月光仮面』のテレビ放送が始まった。"
+  },
+  {
+    "id": 6,
+    "date": "1969-02-25",
+    "recurring": false,
+    "title": "夕刊紙の日",
+    "description": "1969（昭和44）年、タブロイド版の駅売り専門の夕刊紙「夕刊フジ」が創刊した。"
   }
 ]
