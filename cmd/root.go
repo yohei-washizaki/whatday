@@ -31,22 +31,12 @@ import (
 
 	"encoding/json"
 
-	"github.com/goodsign/monday"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )
 
 //go:embed data/wdayin/*.json
 var wdayinData embed.FS
-
-// Event はデータセット内の各記念日イベントを表現する構造体です。
-type Event struct {
-	ID          int    `json:"id" yaml:"id"`
-	Date        string `json:"date" yaml:"date"`           // "MM-DD"形式で記録（例: "02-22"）
-	Frequency   string `json:"frequency" yaml:"frequency"` // 毎年繰り返すイベントの場合、"yearly" と記録
-	Title       string `json:"title" yaml:"title"`
-	Description string `json:"description" yaml:"description"`
-}
 
 const kDataRoot = "data/wdayin"
 
@@ -97,17 +87,17 @@ this project serves as a personal learning exercise in crafting concise, effecti
 			}
 
 			switch e.Frequency {
-				case "yearly":
-					if d.Month() == today.Month() && d.Day() == today.Day() {
-						eventsFound = append(eventsFound, e)
-					}
-				case "monthly":
-					if d.Day() == today.Day() {
-						eventsFound = append(eventsFound, e)
-					}
-				default:
-					fmt.Fprintf(os.Stderr, "Error parsing events data: %d\n", e.ID)
-					os.Exit(1)
+			case "yearly":
+				if d.Month() == today.Month() && d.Day() == today.Day() {
+					eventsFound = append(eventsFound, e)
+				}
+			case "monthly":
+				if d.Day() == today.Day() {
+					eventsFound = append(eventsFound, e)
+				}
+			default:
+				fmt.Fprintf(os.Stderr, "Error parsing events data: %d\n", e.ID)
+				os.Exit(1)
 			}
 		}
 
@@ -125,70 +115,6 @@ this project serves as a personal learning exercise in crafting concise, effecti
 		eventSelected := eventsFound[randomIndex(len(eventsFound))]
 		displayEvent(eventSelected, showDescription)
 	},
-}
-
-func displayEvent(e Event, showDescription bool) {
-	fmt.Println(e.Title)
-	if ! showDescription{
-		return
-	}
-
-	// ロケールに沿って、記念日のフォーマットを調整する
-	dateFormatted, err := FormatDateForLocale(e, viper.GetString("locale"))
-	if err == nil {
-		fmt.Println(dateFormatted)
-	}
-	fmt.Println(e.Description)
-}
-
-func FormatDateForLocale(e Event, locale string) (string, error) {
-	switch e.Frequency {
-		case "yearly":
-			return FormatDateForLocaleYearly(e.Date, locale)
-		case "monthly":
-			return FormatDateForLocaleMonthly(e.Date, locale)
-		default:
-			return "", fmt.Errorf("unsupported frequency: %s", e.Frequency)
-	}
-}
-
-func FormatDateForLocaleYearly(dateStr, locale string) (string, error){
-	t, err := time.Parse("2006-01-02", dateStr)
-	if err != nil {
-		return "", err
-	}
-
-	var dateFormatted string
-	var error error
-	switch locale {
-	case "JaJP":
-		dateFormatted, error = monday.Format(t, "2006年1月2日", monday.LocaleJaJP), nil
-	case "EnUS":
-		dateFormatted, error = monday.Format(t, "January 2, 2006", monday.LocaleEnUS), nil
-	default:
-		dateFormatted, error = t.Format("2006-01-02"), nil
-	}
-	return dateFormatted, error
-}
-
-func FormatDateForLocaleMonthly(dateStr, locale string) (string, error){
-	t, err := time.Parse("2006-01-02", dateStr)
-	if err != nil {
-		return "", err
-	}
-
-	var dateFormatted string
-	switch locale {
-	case "JaJP":
-		dateFormatted, err = monday.Format(t, "2日", monday.LocaleJaJP), nil
-		dateFormatted = "毎月" + dateFormatted
-	case "EnUS":
-		dateFormatted, err = monday.Format(t, "2", monday.LocaleEnUS), nil
-		dateFormatted = "Every month on the " + dateFormatted
-	default:
-		dateFormatted, err = t.Format("02"), nil
-	}
-	return dateFormatted, err
 }
 
 var rnd = rand.New(rand.NewSource(time.Now().UnixNano()))
