@@ -2,43 +2,50 @@
   {
     "id": 1,
     "date": "9999-01-01",
-    "recurring": true,
+    "frequency": "yearly",
     "title": "元旦",
     "description": "新年の始まりを祝う日です。"
   },
   {
     "id": 2,
     "date": "9999-02-22",
-    "recurring": true,
+    "frequency": "yearly",
     "title": "猫の日",
     "description": "猫を愛でる日です。"
   },
   {
     "id": 3,
     "date": "9999-02-22",
-    "recurring": true,
+    "frequency": "yearly",
     "title": "おでんの日",
     "description": "熱々のおでんを食べるときに、息を吹き掛けて冷ます音「ふ～ふ～ふ（日本記念日協会認定）」が由来です。"
   },
   {
     "id": 4,
     "date": "1960-02-23",
-    "recurring": false,
+    "frequency": "yearly",
     "title": "天皇誕生日",
     "description": "第126代天皇徳仁の誕生日。日本の国民の祝日の一つである。"
   },
   {
     "id": 5,
     "date": "1958-02-24",
-    "recurring": false,
+    "frequency": "yearly",
     "title": "月光仮面登場の日",
     "description": "1958年（昭和33年）のこの日、ラジオ東京（現：TBS）で国産初の連続テレビ映画『月光仮面』のテレビ放送が始まった。"
   },
   {
     "id": 6,
     "date": "1969-02-25",
-    "recurring": false,
+    "frequency": "yearly",
     "title": "夕刊紙の日",
     "description": "1969（昭和44）年、タブロイド版の駅売り専門の夕刊紙「夕刊フジ」が創刊した。"
+  },
+  {
+    "id": 7,
+    "date": "9999-01-25",
+    "frequency": "monthly",
+    "title": "プリンの日",
+    "description": "「プリンを食べると思わずニッコリ」の「ニ（2）ッコ（5）リ」と読む語呂合わせから毎月25日とした。"
   }
 ]
