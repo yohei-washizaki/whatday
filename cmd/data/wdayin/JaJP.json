@@ -54,5 +54,12 @@
     "frequency": "yearly",
     "title": "二・二六事件の日",
     "description": "昭和11年、陸軍皇道派の青年将校が起こしたクーデター未遂事件が起きた日。"
+  },
+  {
+    "id": 9,
+    "date": "1996-02-27",
+    "frequency": "yearly",
+    "title": "Pokémon Day",
+    "description": "1996年、ポケットモンスターのゲームソフト『ポケットモンスター 赤・緑』が発売された。"
   }
 ]
