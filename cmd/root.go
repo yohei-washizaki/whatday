@@ -139,8 +139,6 @@ func init() {
 	// will be global for your application.
 
 	rootCmd.PersistentFlags().StringVar(&cfgFile, "config", "", "config file (default is $HOME/.wday.yaml)")
-	rootCmd.PersistentFlags().String("locale", "JaJP", "Locale code for the default dataset (e.g. JaJP, EnUS)")
-	viper.BindPFlag("locale", rootCmd.PersistentFlags().Lookup("locale"))
 
 	// Cobra also supports local flags, which will only run
 	// when this action is called directly.
