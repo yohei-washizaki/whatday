@@ -32,13 +32,17 @@ import (
 // localeCmd represents the locale command
 var localeCmd = &cobra.Command{
 	Use:   "locale",
-	Short: "A brief description of your command",
-	Long: `A longer description that spans multiple lines and likely contains examples
-and usage of using your command. For example:
+	Short: "Manage and display locale settings",
+	Long: `The 'locale' command allows you to manage and display locale settings for the application. 
 
-Cobra is a CLI library for Go that empowers applications.
-This application is a tool to generate the needed files
-to quickly create a Cobra application.`,
+You can use this command to list all supported locales, set a specific locale, or display the current locale settings. 
+
+Examples:
+  - To list all supported locales: 'locale list'
+  - To set a locale: 'locale set [locale code]'
+  - To display the current locale: 'locale'
+
+Supported locales include 'EnUS' for English (US) and 'JaJP' for Japanese.`,
 	Run: func(cmd *cobra.Command, args []string) {
 		localeCode := viper.GetString("locale")
 		locale, ok := GetLocaleByCode(localeCode)
@@ -86,9 +90,13 @@ func printLocale(locale Locale, displayName bool, toStdErr bool) {
 
 var listCmd = &cobra.Command{
 	Use:   "list",
-	Short: "A brief description of your command",
-	Long: `A longer description that spans multiple lines and likely contains examples
-and usage of using your command.`,
+	Short: "List all supported locales",
+	Long: `The 'list' command displays all supported locales for the application. 
+
+You can use this command to see which locales are available for use. 
+
+Examples:
+  - To list all supported locales: 'locale list'`,
 	Run: func(cmd *cobra.Command, args []string) {
 		for _, loc := range SupportedLocalesMap {
 			printLocale(loc, showDesc, true)
