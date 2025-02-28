@@ -42,6 +42,7 @@ const kDataRoot = "data/wdayin"
 
 var cfgFile string
 var showAll bool
+var inputDate string
 
 // rootCmd represents the base command when called without any subcommands
 var rootCmd = &cobra.Command{
@@ -50,7 +51,12 @@ var rootCmd = &cobra.Command{
 	Long: `whatday is a simple CLI tool that reveals historical events, notable birthdays,
 and interesting observances for any given day. Built with Go and Cobra, 
 this project serves as a personal learning exercise in crafting concise, effective CLI applications.`,
+	Args: cobra.MaximumNArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {
+		if len(args) > 0 {
+			inputDate = args[0]
+		}
+
 		var datasetPath string
 		locale := viper.GetString("locale")
 		switch locale {
@@ -75,28 +81,43 @@ this project serves as a personal learning exercise in crafting concise, effecti
 			return
 		}
 
-		today := time.Now()
 		var eventsFound []Event
 		for _, e := range events {
-			d, err := time.Parse("2006-01-02", e.Date)
-			if err != nil {
-				fmt.Fprintf(os.Stderr, "Error parsing events data: %d\n", e.ID)
-				os.Exit(1)
-				return
-			}
+			var eventDate time.Time
+			var err error
+			if inputDate != "" {
+				eventDate, err = time.Parse("2006-01-02", e.Date)
+				if err != nil {
+					fmt.Fprintf(os.Stderr, "Error parsing event date: %v\n", err)
+					continue
+				}
 
-			switch e.Frequency {
-			case "yearly":
-				if d.Month() == today.Month() && d.Day() == today.Day() {
+				inputDateParsed, err := time.Parse("2006-01-02", inputDate)
+				if err != nil {
+					inputDateParsed, err = time.Parse("01-02", inputDate)
+					if err != nil {
+						inputDateParsed, err = time.Parse("02", inputDate)
+						if err != nil {
+							fmt.Fprintf(os.Stderr, "Error parsing input date: %v\n", err)
+							continue
+						}
+					}
+				}
+
+				if (inputDateParsed.Month() == eventDate.Month() && inputDateParsed.Day() == eventDate.Day()) || (inputDateParsed.Month() == 0 && inputDateParsed.Day() == eventDate.Day()) {
 					eventsFound = append(eventsFound, e)
 				}
-			case "monthly":
-				if d.Day() == today.Day() {
+			} else {
+				eventDate, err = time.Parse("2006-01-02", e.Date)
+				if err != nil {
+					fmt.Fprintf(os.Stderr, "Error parsing event date: %v\n", err)
+					continue
+				}
+
+				today := time.Now()
+				if eventDate.Month() == today.Month() && eventDate.Day() == today.Day() {
 					eventsFound = append(eventsFound, e)
 				}
-			default:
-				fmt.Fprintf(os.Stderr, "Error parsing events data: %d\n", e.ID)
-				os.Exit(1)
 			}
 		}
 
