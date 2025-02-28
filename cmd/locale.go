@@ -28,6 +28,8 @@ import (
 	"github.com/spf13/viper"
 )
 
+var setLocale bool
+
 // localeCmd represents the locale command
 var localeCmd = &cobra.Command{
 	Use:   "locale",
@@ -39,6 +41,19 @@ Cobra is a CLI library for Go that empowers applications.
 This application is a tool to generate the needed files
 to quickly create a Cobra application.`,
 	Run: func(cmd *cobra.Command, args []string) {
+		if setLocale {
+			localeCode := args[0]
+			_, ok := GetLocaleByCode(localeCode)
+			if !ok {
+				fmt.Printf("Unsupported locale: %s\n", localeCode)
+				return
+			}
+			viper.Set("locale", localeCode)
+			viper.WriteConfig()
+			fmt.Printf("Set locale: %s\n", localeCode)
+			return
+		}
+
 		localeCode := viper.GetString("locale")
 		locale, ok := GetLocaleByCode(localeCode)
 
@@ -96,9 +111,10 @@ func init() {
 	// Cobra supports Persistent Flags which will work for this command
 	// and all subcommands, e.g.:
 	// localeCmd.PersistentFlags().String("foo", "", "A help for foo")
-	localeCmd.PersistentFlags().BoolVar(&showDesc, "desc", false, "Show description of locale.")
 
 	// Cobra supports local flags which will only run when this command
 	// is called directly, e.g.:
 	// localeCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
+	localeCmd.Flags().BoolVar(&showDesc, "desc", false, "Show description of locale.")
+	localeCmd.Flags().BoolVar(&setLocale, "set", false, "Set locale.")
 }
