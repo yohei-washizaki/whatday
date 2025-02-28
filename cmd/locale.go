@@ -115,9 +115,31 @@ and usage of using your command.`,
 	},
 }
 
+var setCmd = &cobra.Command{
+	Use:   "set [locale code]",
+	Short: "Set the locale",
+	Args:  cobra.ExactArgs(1),
+	Run: func(cmd *cobra.Command, args []string) {
+		localeCode := args[0]
+		_, ok := GetLocaleByCode(localeCode)
+		if !ok {
+			fmt.Fprintf(os.Stderr, "Unsupported locale: %s\n", localeCode)
+			fmt.Fprintf(os.Stderr, "Supported locales are:\n")
+			for _, loc := range SupportedLocalesMap {
+				printLocale(loc, true, true)
+			}
+			os.Exit(1)
+			return
+		}
+		viper.Set("locale", localeCode)
+		viper.WriteConfig()
+	},
+}
+
 func init() {
 	rootCmd.AddCommand(localeCmd)
 	localeCmd.AddCommand(listCmd)
+	localeCmd.AddCommand(setCmd)
 
 	// Here you will define your flags and configuration settings.
 
