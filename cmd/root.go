@@ -51,11 +51,7 @@ var rootCmd = &cobra.Command{
 	Long: `whatday is a simple CLI tool that reveals historical events, notable birthdays,
 and interesting observances for any given day. Built with Go and Cobra, 
 this project serves as a personal learning exercise in crafting concise, effective CLI applications.`,
-	Args: cobra.MaximumNArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {
-		if len(args) > 0 {
-			inputDate = args[0]
-		}
 
 		var datasetPath string
 		locale := viper.GetString("locale")
@@ -81,43 +77,39 @@ this project serves as a personal learning exercise in crafting concise, effecti
 			return
 		}
 
-		var eventsFound []Event
-		for _, e := range events {
-			var eventDate time.Time
-			var err error
-			if inputDate != "" {
-				eventDate, err = time.Parse("2006-01-02", e.Date)
-				if err != nil {
-					fmt.Fprintf(os.Stderr, "Error parsing event date: %v\n", err)
-					continue
+		var today time.Time
+		var matchLevel string
+		if inputDate == "" {
+			today = time.Now()
+			matchLevel = "today"
+		} else {
+			today, err = time.Parse("2006-01-02", inputDate)
+			matchLevel = "exact"
+			if err != nil {
+				today, err = time.Parse("01-02", inputDate)
+				if err == nil {
+					today = today.AddDate(9999-today.Year(), 0, 0)
 				}
-
-				inputDateParsed, err := time.Parse("2006-01-02", inputDate)
+				matchLevel = "month-day"
 				if err != nil {
-					inputDateParsed, err = time.Parse("01-02", inputDate)
+					today, err = time.Parse("02", inputDate)
+					if err == nil {
+						today = today.AddDate(9999-today.Year(), 1-int(today.Month()), 0)
+					}
+					matchLevel = "day"
 					if err != nil {
-						inputDateParsed, err = time.Parse("02", inputDate)
-						if err != nil {
-							fmt.Fprintf(os.Stderr, "Error parsing input date: %v\n", err)
-							continue
-						}
+						fmt.Fprintf(os.Stderr, "Error parsing input date: %v\n", err)
+						os.Exit(1)
+						return
 					}
 				}
+			}
+		}
 
-				if (inputDateParsed.Month() == eventDate.Month() && inputDateParsed.Day() == eventDate.Day()) || (inputDateParsed.Month() == 0 && inputDateParsed.Day() == eventDate.Day()) {
-					eventsFound = append(eventsFound, e)
-				}
-			} else {
-				eventDate, err = time.Parse("2006-01-02", e.Date)
-				if err != nil {
-					fmt.Fprintf(os.Stderr, "Error parsing event date: %v\n", err)
-					continue
-				}
-
-				today := time.Now()
-				if eventDate.Month() == today.Month() && eventDate.Day() == today.Day() {
-					eventsFound = append(eventsFound, e)
-				}
+		var eventsFound []Event
+		for _, e := range events {
+			if eventMatches(e, today, matchLevel) {
+				eventsFound = append(eventsFound, e)
 			}
 		}
 
@@ -138,6 +130,31 @@ this project serves as a personal learning exercise in crafting concise, effecti
 }
 
 var rnd = rand.New(rand.NewSource(time.Now().UnixNano()))
+
+func eventMatches(e Event, today time.Time, matchLevel string) bool {
+	eventDate, err := time.Parse("2006-01-02", e.Date)
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "Error parsing event date: %v\n", err)
+		os.Exit(1)
+		return false
+	}
+
+	switch matchLevel {
+	case "today":
+		if e.Frequency == "yearly" {
+			return eventDate.Month() == today.Month() && eventDate.Day() == today.Day()
+		}
+		return eventDate.Day() == today.Day()
+	case "exact":
+		return eventDate.Year() == today.Year() && eventDate.Month() == today.Month() && eventDate.Day() == today.Day()
+	case "month-day":
+		return eventDate.Month() == today.Month() && eventDate.Day() == today.Day()
+	case "day":
+		return eventDate.Day() == today.Day()
+	default:
+		return false
+	}
+}
 
 func randomIndex(max int) int {
 	return rnd.Intn(max)
@@ -164,6 +181,7 @@ func init() {
 	// Cobra also supports local flags, which will only run
 	// when this action is called directly.
 	rootCmd.Flags().BoolVarP(&showAll, "all", "a", false, "Show all events found.")
+	rootCmd.Flags().StringVarP(&inputDate, "date", "d", "", "Specify a date to search for events (YYYY-MM-DD, MM-DD or DD).")
 }
 
 // initConfig reads in config file and ENV variables if set.
