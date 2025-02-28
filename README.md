@@ -45,6 +45,22 @@ To show all events found for a specific date, use the `--all` flag:
 wday --date YYYY-MM-DD --all
 ```
 
+## Available Locales
+
+To list all supported locales, use the following command:
+
+```sh
+wday locale list
+```
+
+To set a specific locale, use the `set` command followed by the locale code:
+
+```sh
+wday locale set [locale code]
+```
+
+Supported locales include 'EnUS' for English (US) and 'JaJP' for Japanese.
+
 ## Configuration
 
 The application can be configured via a YAML file located at `$HOME/.wday.yaml`. The default configuration is:
