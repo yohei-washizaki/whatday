@@ -41,7 +41,6 @@ var wdayinData embed.FS
 const kDataRoot = "data/wdayin"
 
 var cfgFile string
-var showDescription bool
 var showAll bool
 
 // rootCmd represents the base command when called without any subcommands
@@ -107,13 +106,13 @@ this project serves as a personal learning exercise in crafting concise, effecti
 
 		if showAll {
 			for _, e := range eventsFound {
-				displayEvent(e, showDescription)
+				displayEvent(e, false)
 			}
 			return
 		}
 
 		eventSelected := eventsFound[randomIndex(len(eventsFound))]
-		displayEvent(eventSelected, showDescription)
+		displayEvent(eventSelected, false)
 	},
 }
 
@@ -145,7 +144,6 @@ func init() {
 
 	// Cobra also supports local flags, which will only run
 	// when this action is called directly.
-	rootCmd.Flags().BoolVarP(&showDescription, "description", "d", false, "Show event descriptions")
 	rootCmd.Flags().BoolVarP(&showAll, "all", "a", false, "Show all events found.")
 }
 

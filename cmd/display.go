@@ -14,7 +14,6 @@ func displayEvent(e Event, showDescription bool) {
 		if err == nil {
 			output += "\t" + dateFormatted
 		}
-		output += "\t" + e.Description
 	}
 	fmt.Println(output)
 }

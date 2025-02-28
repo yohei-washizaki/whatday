@@ -3,70 +3,60 @@
     "id": 1,
     "date": "9999-01-01",
     "frequency": "yearly",
-    "title": "元旦",
-    "description": "新年の始まりを祝う日です。"
+    "title": "元旦"
   },
   {
     "id": 2,
     "date": "9999-02-22",
     "frequency": "yearly",
-    "title": "猫の日",
-    "description": "猫を愛でる日です。"
+    "title": "猫の日"
   },
   {
     "id": 3,
     "date": "9999-02-22",
     "frequency": "yearly",
-    "title": "おでんの日",
-    "description": "熱々のおでんを食べるときに、息を吹き掛けて冷ます音「ふ～ふ～ふ（日本記念日協会認定）」が由来です。"
+    "title": "おでんの日"
   },
   {
     "id": 4,
     "date": "1960-02-23",
     "frequency": "yearly",
-    "title": "天皇誕生日",
-    "description": "第126代天皇徳仁の誕生日。日本の国民の祝日の一つである。"
+    "title": "天皇誕生日"
   },
   {
     "id": 5,
     "date": "1958-02-24",
     "frequency": "yearly",
-    "title": "月光仮面登場の日",
-    "description": "1958年（昭和33年）のこの日、ラジオ東京（現：TBS）で国産初の連続テレビ映画『月光仮面』のテレビ放送が始まった。"
+    "title": "月光仮面登場の日"
   },
   {
     "id": 6,
     "date": "1969-02-25",
     "frequency": "yearly",
-    "title": "夕刊紙の日",
-    "description": "1969（昭和44）年、タブロイド版の駅売り専門の夕刊紙「夕刊フジ」が創刊した。"
+    "title": "夕刊紙の日"
   },
   {
     "id": 7,
     "date": "9999-01-25",
     "frequency": "monthly",
-    "title": "プリンの日",
-    "description": "「プリンを食べると思わずニッコリ」の「ニ（2）ッコ（5）リ」と読む語呂合わせから毎月25日とした。"
+    "title": "プリンの日"
   },
   {
     "id": 8,
     "date": "1936-02-26",
     "frequency": "yearly",
-    "title": "二・二六事件の日",
-    "description": "昭和11年、陸軍皇道派の青年将校が起こしたクーデター未遂事件が起きた日。"
+    "title": "二・二六事件の日"
   },
   {
     "id": 9,
     "date": "1996-02-27",
     "frequency": "yearly",
-    "title": "Pokémon Day",
-    "description": "1996年、ポケットモンスターのゲームソフト『ポケットモンスター 赤・緑』が発売された。"
+    "title": "Pokémon Day"
   },
   {
     "id": 10,
     "date": "1855-02-28",
     "frequency": "yearly",
-    "title": "ビスケットの日",
-    "description": "「1855年2月28日に、水戸の藩士がビスケットの作り方を水戸藩宛に手紙で送付したことから、日本ビスケット協会が制定。"
+    "title": "ビスケットの日"
   }
 ]
