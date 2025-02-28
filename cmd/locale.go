@@ -23,6 +23,7 @@ package cmd
 
 import (
 	"fmt"
+	"os"
 
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
@@ -45,12 +46,12 @@ to quickly create a Cobra application.`,
 			localeCode := args[0]
 			_, ok := GetLocaleByCode(localeCode)
 			if !ok {
-				fmt.Printf("Unsupported locale: %s\n", localeCode)
+				fmt.Fprintf(os.Stderr, "Unsupported locale: %s\n", localeCode)
+				os.Exit(1)
 				return
 			}
 			viper.Set("locale", localeCode)
 			viper.WriteConfig()
-			fmt.Printf("Set locale: %s\n", localeCode)
 			return
 		}
 
