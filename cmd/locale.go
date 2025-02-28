@@ -47,6 +47,10 @@ to quickly create a Cobra application.`,
 			_, ok := GetLocaleByCode(localeCode)
 			if !ok {
 				fmt.Fprintf(os.Stderr, "Unsupported locale: %s\n", localeCode)
+				fmt.Fprintf(os.Stderr, "Supported locales are:\n")
+				for _, loc := range SupportedLocalesMap {
+					printLocale(loc, true, true)
+				}
 				os.Exit(1)
 				return
 			}
@@ -62,7 +66,7 @@ to quickly create a Cobra application.`,
 			return
 		}
 
-		printLocale(locale, showDesc)
+		printLocale(locale, showDesc, true)
 	},
 }
 
@@ -83,12 +87,20 @@ func GetLocaleByCode(code string) (Locale, bool) {
 
 var showDesc bool
 
-func printLocale(locale Locale, displayName bool) {
+func printLocale(locale Locale, displayName bool, toStdErr bool) {
 	if displayName {
-		fmt.Printf("%s, %s\n", locale.Code, locale.DisplayName)
+		if toStdErr {
+			fmt.Fprintf(os.Stderr, "%s, %s\n", locale.Code, locale.DisplayName)
+		} else {
+			fmt.Printf("%s, %s\n", locale.Code, locale.DisplayName)
+		}
 		return
 	}
-	fmt.Printf("%s\n", locale.Code)
+	if toStdErr {
+		fmt.Fprintf(os.Stderr, "%s\n", locale.Code)
+	} else {
+		fmt.Printf("%s\n", locale.Code)
+	}
 }
 
 var listCmd = &cobra.Command{
@@ -98,7 +110,7 @@ var listCmd = &cobra.Command{
 and usage of using your command.`,
 	Run: func(cmd *cobra.Command, args []string) {
 		for _, loc := range SupportedLocalesMap {
-			printLocale(loc, showDesc)
+			printLocale(loc, showDesc, true)
 		}
 	},
 }
