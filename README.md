@@ -22,7 +22,7 @@ cd whatday
 make build
 
 # Optionally, install the binary to your system
-sudo install wday /usr/local/bin/
+sudo make install
 ```
 
 ## Usage
