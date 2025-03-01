@@ -12,6 +12,10 @@ all: build
 build:
 	$(GOBUILD) -o $(BINARY_NAME) main.go
 
+# Install the binary
+install: build
+	cp $(BINARY_NAME) /usr/local/bin/$(BINARY_NAME)
+
 # Clean the build
 clean:
 	rm -f $(BINARY_NAME)

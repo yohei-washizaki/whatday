@@ -58,5 +58,17 @@
     "date": "1855-02-28",
     "frequency": "yearly",
     "title": "ビスケットの日"
+  },
+  {
+    "id": 11,
+    "date": "1954-03-01",
+    "frequency": "yearly",
+    "title": "ビキニ・デー"
+  },
+  {
+    "id": 12,
+    "date": "9999-03-01",
+    "frequency": "yearly",
+    "title": "マヨネーズの日"
   }
 ]
