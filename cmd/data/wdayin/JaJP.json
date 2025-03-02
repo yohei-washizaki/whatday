@@ -70,5 +70,17 @@
     "date": "9999-03-01",
     "frequency": "yearly",
     "title": "マヨネーズの日"
+  },
+  {
+    "id": 13,
+    "date": "9999-03-02",
+    "frequency": "yearly",
+    "title": "ミニの日"
+  },
+  {
+    "id": 14,
+    "date": "1884-03-02",
+    "frequency": "yearly",
+    "title": "後楽園開園記念日"
   }
 ]
