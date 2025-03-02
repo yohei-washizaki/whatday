@@ -13,11 +13,14 @@ build:
 	$(GOBUILD) -o $(BINARY_NAME) main.go
 
 # Install the binary
-install: build
+install:
 	cp $(BINARY_NAME) /usr/local/bin/$(BINARY_NAME)
+
+uninstall:
+	rm -f /usr/local/bin/$(BINARY_NAME)
 
 # Clean the build
 clean:
 	rm -f $(BINARY_NAME)
 
-.PHONY: all build clean
+.PHONY: all build clean install uninstall
