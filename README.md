@@ -36,13 +36,44 @@ wday
 To display events for a specific date, use the `--date` flag:
 
 ```sh
-wday --date YYYY-MM-DD
+wday --date MM-DD
+```
+
+**example**
+
+```sh
+wday --date 01-01
+
+元日
 ```
 
 To show all events found for a specific date, use the `--all` flag:
 
 ```sh
-wday --date YYYY-MM-DD --all
+wday --date MM-DD --all
+```
+
+**example**
+
+```sh
+wday --date 01-01 --all
+
+元日
+太陽暦施行の日
+神戸港記念日
+中華民国設立記念日
+少年法施行の日
+鉄腕アトムの日
+日本初の点字新聞「あけぼの」創刊記念日
+オールインワンゲルの日
+スカルプDの発毛DAY
+肉汁水餃子の日
+資格チャレンジの日
+釜飯の日
+あずきの日
+省エネルギーの日
+Myハミガキの日
+もったいないフルーツの日
 ```
 
 ## Available Locales
