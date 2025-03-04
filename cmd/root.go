@@ -33,6 +33,8 @@ import (
 
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
+
+	"go.etcd.io/bbolt"
 )
 
 //go:embed data/wdayin/*.json
@@ -43,6 +45,7 @@ const kDataRoot = "data/wdayin"
 var cfgFile string
 var showAll bool
 var inputDate string
+var DB *bbolt.DB
 
 // rootCmd represents the base command when called without any subcommands
 var rootCmd = &cobra.Command{
@@ -257,5 +260,47 @@ func initConfig() {
 			return
 		}
 	}
-	
+
+	locale := viper.GetString("locale")
+	dbPath := filepath.Join(dbDir, locale+".db")
+
+	// Check if the database file exists
+	if _, err := os.Stat(dbPath); os.IsNotExist(err) {
+		// Create the database file
+		DB, err = bbolt.Open(dbPath, 0600, nil)
+		if err != nil {
+			fmt.Println("Error creating database:", err)
+			return
+		}
+
+		// Write the dataset to the database
+		datasetPath := filepath.Join(kDataRoot, locale+".json")
+
+		data, err := wdayinData.ReadFile(datasetPath)
+		if err != nil {
+			fmt.Println("Error reading dataset file:", err)
+			return
+		}
+
+		err = DB.Update(func(tx *bbolt.Tx) error {
+			bucket, err := tx.CreateBucketIfNotExists([]byte("Events"))
+			if err != nil {
+				return fmt.Errorf("create bucket: %s", err)
+			}
+
+			return bucket.Put([]byte("data"), data)
+		})
+		if err != nil {
+			fmt.Println("Error writing dataset to database:", err)
+			return
+		}
+	} else {
+		DB, err = bbolt.Open(dbPath, 0600, nil)
+		if err != nil {
+			fmt.Println("Error opening database:", err)
+			return
+		}
+	}
+
+	defer DB.Close()
 }
