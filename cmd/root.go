@@ -188,13 +188,15 @@ func init() {
 	rootCmd.Flags().StringVarP(&inputDate, "date", "d", "", "Specify a date to search for events (YYYY-MM-DD, MM-DD or DD).")
 }
 
+var wdayHome string
+
 // initializeApp reads in config file and ENV variables if set.
 func initializeApp() {
 	// find home directory
 	home, err := os.UserHomeDir()
 	cobra.CheckErr(err)
 
-	wdayHome := filepath.Join(home, ".wday.d")
+	wdayHome = filepath.Join(home, ".wday.d")
 	if _, err := os.Stat(wdayHome); os.IsNotExist(err) {
 		err := os.Mkdir(wdayHome, 0755)
 		if err != nil {
@@ -226,15 +228,7 @@ func initializeApp() {
 				configFile = cfgFile
 			} else {
 				cobra.CheckErr(err)
-				configDir := wdayHome
-				if _, err := os.Stat(configDir); os.IsNotExist(err) {
-					err := os.Mkdir(configDir, 0755)
-					if err != nil {
-						fmt.Println("Error creating config directory:", err)
-						return
-					}
-				}
-				configFile = filepath.Join(configDir, ".wday.yaml")
+				configFile = filepath.Join(wdayHome, ".wday.yaml")
 			}
 			defaultConfig := []byte("locale: JaJP\n")
 			err := os.WriteFile(configFile, defaultConfig, 0644)
@@ -253,9 +247,9 @@ func initializeApp() {
 	}
 
 	// Make database cache directory if it doesn't exist at wdayHome/db
-	dbDir := filepath.Join(wdayHome, "db")
+	dbDir := filepath.Join(wdayHome, "cache", "db")
 	if _, err := os.Stat(dbDir); os.IsNotExist(err) {
-		err := os.Mkdir(dbDir, 0755)
+		err := os.MkdirAll(dbDir, 0755)
 		if err != nil {
 			fmt.Println("Error creating database cache directory:", err)
 			return
