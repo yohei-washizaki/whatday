@@ -186,16 +186,28 @@ func init() {
 
 // initConfig reads in config file and ENV variables if set.
 func initConfig() {
+	// find home directory
+	home, err := os.UserHomeDir()
+	cobra.CheckErr(err)
+
+	wdayHome := filepath.Join(home, ".wday.d")
+	if _, err := os.Stat(wdayHome); os.IsNotExist(err) {
+		err := os.Mkdir(wdayHome, 0755)
+		if err != nil {
+			fmt.Println("Error creating config directory:", err)
+			return
+		}
+	}
+
 	if cfgFile != "" {
 		// Use config file from the flag.
 		viper.SetConfigFile(cfgFile)
 	} else {
 		// Find home directory.
-		home, err := os.UserHomeDir()
 		cobra.CheckErr(err)
 
 		// Search config in home directory with name ".wday" (without extension).
-		viper.AddConfigPath(home)
+		viper.AddConfigPath(wdayHome)
 		viper.SetConfigType("yaml")
 		viper.SetConfigName(".wday")
 	}
@@ -209,9 +221,16 @@ func initConfig() {
 			if cfgFile != "" {
 				configFile = cfgFile
 			} else {
-				home, err := os.UserHomeDir()
 				cobra.CheckErr(err)
-				configFile = home + "/.wday.yaml"
+				configDir := wdayHome
+				if _, err := os.Stat(configDir); os.IsNotExist(err) {
+					err := os.Mkdir(configDir, 0755)
+					if err != nil {
+						fmt.Println("Error creating config directory:", err)
+						return
+					}
+				}
+				configFile = filepath.Join(configDir, ".wday.yaml")
 			}
 			defaultConfig := []byte("locale: JaJP\n")
 			err := os.WriteFile(configFile, defaultConfig, 0644)
@@ -228,4 +247,15 @@ func initConfig() {
 			fmt.Fprintln(os.Stderr, "Error reading config file:", err)
 		}
 	}
+
+	// Make database cache directory if it doesn't exist at wdayHome/db
+	dbDir := filepath.Join(wdayHome, "db")
+	if _, err := os.Stat(dbDir); os.IsNotExist(err) {
+		err := os.Mkdir(dbDir, 0755)
+		if err != nil {
+			fmt.Println("Error creating database cache directory:", err)
+			return
+		}
+	}
+	
 }
