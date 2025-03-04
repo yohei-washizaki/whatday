@@ -173,7 +173,8 @@ func Execute() {
 }
 
 func init() {
-	cobra.OnInitialize(initConfig)
+	cobra.OnInitialize(initializeApp)
+	cobra.OnFinalize(finalizeApp)
 
 	// Here you will define your flags and configuration settings.
 	// Cobra supports persistent flags, which, if defined here,
@@ -187,8 +188,8 @@ func init() {
 	rootCmd.Flags().StringVarP(&inputDate, "date", "d", "", "Specify a date to search for events (YYYY-MM-DD, MM-DD or DD).")
 }
 
-// initConfig reads in config file and ENV variables if set.
-func initConfig() {
+// initializeApp reads in config file and ENV variables if set.
+func initializeApp() {
 	// find home directory
 	home, err := os.UserHomeDir()
 	cobra.CheckErr(err)
@@ -301,6 +302,10 @@ func initConfig() {
 			return
 		}
 	}
+}
 
-	defer DB.Close()
+func finalizeApp() {
+	if DB != nil {
+		DB.Close()
+	}
 }
