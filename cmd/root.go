@@ -227,19 +227,21 @@ func initializeApp() {
 			if cfgFile != "" {
 				configFile = cfgFile
 			} else {
-				cobra.CheckErr(err)
 				configFile = filepath.Join(wdayHome, ".wday.yaml")
 			}
+
+			// デフォルト設定ファイルを作成
 			defaultConfig := []byte("locale: JaJP\n")
 			err := os.WriteFile(configFile, defaultConfig, 0644)
 			if err != nil {
 				fmt.Println("Error creating default config file:", err)
-			} else {
-				fmt.Println("Default config file created at:", configFile)
-				viper.SetConfigFile(configFile)
-				if err := viper.ReadInConfig(); err != nil {
-					fmt.Fprintln(os.Stderr, "Error reading default config file:", err)
-				}
+				return
+			}
+
+			// 作成した設定ファイルを読み込む
+			viper.SetConfigFile(configFile)
+			if err := viper.ReadInConfig(); err != nil {
+				fmt.Fprintln(os.Stderr, "Error reading default config file:", err)
 			}
 		} else {
 			fmt.Fprintln(os.Stderr, "Error reading config file:", err)
