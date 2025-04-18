@@ -41,6 +41,7 @@ import (
 var wdayinData embed.FS
 
 const kDataRoot = "data/wdayin"
+const kCompanyName = "jp.br4shkode"
 
 var cfgFile string
 var showAll bool
@@ -188,7 +189,7 @@ func init() {
 	rootCmd.Flags().StringVarP(&inputDate, "date", "d", "", "Specify a date to search for events (YYYY-MM-DD, MM-DD or DD).")
 }
 
-var configPath string
+var ConfigRootPath string
 
 // initializeApp reads in config file and ENV variables if set.
 func initializeApp() {
@@ -196,13 +197,11 @@ func initializeApp() {
 	home, err := os.UserHomeDir()
 	cobra.CheckErr(err)
 
-	configPath = filepath.Join(home, ".config", "wday")
-	if _, err := os.Stat(configPath); os.IsNotExist(err) {
-		err := os.Mkdir(configPath, 0755)
-		if err != nil {
-			fmt.Println("Error creating config directory:", err)
-			return
-		}
+	ConfigRootPath = filepath.Join(home, ".config", kCompanyName, "wday")
+	err := os.MkdirAll(ConfigRootPath, 0755)
+	if err != nil {
+		fmt.Println("Error creating config directory:", err)
+		return
 	}
 
 	if cfgFile != "" {
@@ -213,7 +212,7 @@ func initializeApp() {
 		cobra.CheckErr(err)
 
 		// Search config in home directory with name ".wday" (without extension).
-		viper.AddConfigPath(configPath)
+		viper.AddConfigPath(ConfigRootPath)
 		viper.SetConfigType("yaml")
 		viper.SetConfigName("config") // name of config file (without extension)
 	}
@@ -227,7 +226,7 @@ func initializeApp() {
 			if cfgFile != "" {
 				configFile = cfgFile
 			} else {
-				configFile = filepath.Join(configPath, "config.yaml")
+				configFile = filepath.Join(ConfigRootPath, "config.yaml")
 			}
 
 			// デフォルト設定ファイルを作成
@@ -248,7 +247,7 @@ func initializeApp() {
 		}
 	}
 
-	// Make database cache directory if it doesn't exist at configPath/db
+	// Make database cache directory if it doesn't exist at ConfigRootPath/db
 	home, err = os.UserHomeDir()
 	cobra.CheckErr(err)
 
