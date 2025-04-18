@@ -251,7 +251,7 @@ func initializeApp() {
 	home, err = os.UserHomeDir()
 	cobra.CheckErr(err)
 
-	dbDir := filepath.Join(home, ".cache", "wday", "db")
+	dbDir := filepath.Join(home, ".cache", kCompanyName, "wday", "db")
 	if _, err := os.Stat(dbDir); os.IsNotExist(err) {
 		err := os.MkdirAll(dbDir, 0755)
 		if err != nil {
