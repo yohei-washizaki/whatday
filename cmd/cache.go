@@ -46,8 +46,13 @@ var cleanCmd = &cobra.Command{
 	Long: `Clean the cache. For example:
 	`,
 	Run: func(cmd *cobra.Command, args []string) {
-		cachePath := filepath.Join(os.Getenv("HOME"), ".cache", "wday")
-		err := os.RemoveAll(cachePath)
+		home, err := os.UserHomeDir()
+		if err != nil {
+			cmd.PrintErrf("Error: %v\n", err)
+			os.Exit(1)
+		}
+		cachePath := filepath.Join(home, ".cache", "wday")
+		err = os.RemoveAll(cachePath)
 		if err != nil {
 			cmd.PrintErrf("Error: %v\n", err)
 			os.Exit(1)
