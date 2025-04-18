@@ -198,7 +198,7 @@ func initializeApp() {
 	cobra.CheckErr(err)
 
 	ConfigRootPath = filepath.Join(home, ".config", kCompanyName, "wday")
-	err := os.MkdirAll(ConfigRootPath, 0755)
+	err = os.MkdirAll(ConfigRootPath, 0755)
 	if err != nil {
 		fmt.Println("Error creating config directory:", err)
 		return
