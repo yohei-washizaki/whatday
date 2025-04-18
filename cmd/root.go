@@ -188,7 +188,7 @@ func init() {
 	rootCmd.Flags().StringVarP(&inputDate, "date", "d", "", "Specify a date to search for events (YYYY-MM-DD, MM-DD or DD).")
 }
 
-var wdayHome string
+var configPath string
 
 // initializeApp reads in config file and ENV variables if set.
 func initializeApp() {
@@ -196,9 +196,9 @@ func initializeApp() {
 	home, err := os.UserHomeDir()
 	cobra.CheckErr(err)
 
-	wdayHome = filepath.Join(home, ".wday.d")
-	if _, err := os.Stat(wdayHome); os.IsNotExist(err) {
-		err := os.Mkdir(wdayHome, 0755)
+	configPath = filepath.Join(home, ".config", "wday")
+	if _, err := os.Stat(configPath); os.IsNotExist(err) {
+		err := os.Mkdir(configPath, 0755)
 		if err != nil {
 			fmt.Println("Error creating config directory:", err)
 			return
@@ -213,9 +213,9 @@ func initializeApp() {
 		cobra.CheckErr(err)
 
 		// Search config in home directory with name ".wday" (without extension).
-		viper.AddConfigPath(wdayHome)
+		viper.AddConfigPath(configPath)
 		viper.SetConfigType("yaml")
-		viper.SetConfigName(".wday")
+		viper.SetConfigName("config") // name of config file (without extension)
 	}
 
 	viper.AutomaticEnv() // read in environment variables that match
@@ -227,7 +227,7 @@ func initializeApp() {
 			if cfgFile != "" {
 				configFile = cfgFile
 			} else {
-				configFile = filepath.Join(wdayHome, ".wday.yaml")
+				configFile = filepath.Join(configPath, "config.yaml")
 			}
 
 			// デフォルト設定ファイルを作成
@@ -248,8 +248,11 @@ func initializeApp() {
 		}
 	}
 
-	// Make database cache directory if it doesn't exist at wdayHome/db
-	dbDir := filepath.Join(wdayHome, "cache", "db")
+	// Make database cache directory if it doesn't exist at configPath/db
+	home, err := os.UserHomeDir()
+	cobra.CheckErr(err)
+
+	dbDir := filepath.Join(home, ".cache", "wday", "db")
 	if _, err := os.Stat(dbDir); os.IsNotExist(err) {
 		err := os.MkdirAll(dbDir, 0755)
 		if err != nil {
