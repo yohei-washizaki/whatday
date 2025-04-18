@@ -51,7 +51,7 @@ var cleanCmd = &cobra.Command{
 			cmd.PrintErrf("Error: %v\n", err)
 			os.Exit(1)
 		}
-		cachePath := filepath.Join(home, ".cache", "wday")
+		cachePath := filepath.Join(home, ".cache", kCompanyName, "wday")
 		err = os.RemoveAll(cachePath)
 		if err != nil {
 			cmd.PrintErrf("Error: %v\n", err)
