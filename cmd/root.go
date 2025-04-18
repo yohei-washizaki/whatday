@@ -249,7 +249,7 @@ func initializeApp() {
 	}
 
 	// Make database cache directory if it doesn't exist at configPath/db
-	home, err := os.UserHomeDir()
+	home, err = os.UserHomeDir()
 	cobra.CheckErr(err)
 
 	dbDir := filepath.Join(home, ".cache", "wday", "db")
